@@ -13,7 +13,7 @@ LOG.setLevel(logging.INFO)
 def scale(payload):
     """Scales Payload"""
 
-    LOG.info("Scaling Payload: %s payload")
+    LOG.info("Scaling Payload: %s", payload)
     scaler = StandardScaler().fit(payload)
     scaled_adhoc_predict = scaler.transform(payload)
     return scaled_adhoc_predict
@@ -27,19 +27,14 @@ def home():
 @app.route("/predict", methods=['POST'])
 def predict():
     # Performs an sklearn prediction
-    try:
-        # Load pretrained model as clf. Try any one model. 
-        clf = joblib.load("./Housing_price_model/LinearRegression.joblib")
-        # clf = joblib.load("./Housing_price_model/StochasticGradientDescent.joblib")
-        # clf = joblib.load("./Housing_price_model/GradientBoostingRegressor.joblib")
-    except ImportError as e:
-        LOG.info("JSON payload: %s json_payload",e)
-        return "Model not loaded"
-
+    # Load pretrained model as clf. Try any one model. 
+    clf = joblib.load("./Housing_price_model/LinearRegression.joblib")
+    # clf = joblib.load("./Housing_price_model/StochasticGradientDescent.joblib")
+    # clf = joblib.load("./Housing_price_model/GradientBoostingRegressor.joblib")
     json_payload = request.json
-    LOG.info("JSON payload: %s json_payload")
+    LOG.info("JSON payload: %s", json_payload)
     inference_payload = pd.DataFrame(json_payload)
-    LOG.info("inference payload DataFrame: %s inference_payload")
+    LOG.info("inference payload DataFrame: %s", inference_payload)
     scaled_payload = scale(inference_payload)
     prediction = list(clf.predict(scaled_payload))
     return jsonify({'prediction': prediction})
